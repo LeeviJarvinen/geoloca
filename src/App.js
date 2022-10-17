@@ -1,25 +1,41 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import Weather from './components/Weather';
 
 function App() {
+  const [latitude, setlatitude] = useState(0)
+  const [longitude, setlongitude] = useState(0)
+  const [isloading, setisloading] = useState(true)
+
+useEffect(() => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log(position)
+      setlatitude(position.coords.latitude)
+      setlongitude(position.coords.longitude)
+      setisloading(false)
+    },(error) => {
+      console.log(error)
+      alert("Paikannus epäonnistui!")
+    })
+  }else {
+    alert("Selaimesi ei tue paikannusta!")
+  }
+}, [])
+  if (isloading) {
+    return <p>Ladataan sijainti...</p>
+  }else {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <p>
+        Position:&nbsp;
+        {latitude.toFixed(3)},
+        {longitude.toFixed(3)}
+      </p>
+      <Weather lat={latitude} lng={longitude} />
     </div>
   );
+  }
 }
 
 export default App;
